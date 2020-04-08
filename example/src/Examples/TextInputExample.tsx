@@ -122,7 +122,7 @@ const TextInputExample = () => {
       >
         <TextInput
           style={styles.inputContainerStyle}
-          label="Flat input"
+          label="Flat input with custom underline color"
           placeholder="Type something"
           value={text}
           onChangeText={(text) => inputActionHandler('text', text)}
@@ -136,6 +136,10 @@ const TextInputExample = () => {
             />
           }
           right={<TextInput.Affix text="/100" />}
+          underlineColor={{
+            inactive: 'red',
+            focused: 'red',
+          }}
         />
         <TextInput
           style={[styles.inputContainerStyle, styles.fontSize]}

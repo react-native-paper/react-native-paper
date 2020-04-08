@@ -145,13 +145,18 @@ class TextInputFlat extends React.Component<ChildTextInputProps> {
         .rgb()
         .string();
       placeholderColor = colors.disabled;
-      underlineColorCustom = 'transparent';
+      underlineColorCustom = {
+        inactive: 'transparent',
+      };
     } else {
       inputTextColor = colors.text;
       activeColor = error ? colors.error : colors.primary;
       placeholderColor = colors.placeholder;
       errorColor = colors.error;
-      underlineColorCustom = underlineColor || colors.disabled;
+      underlineColorCustom = {
+        inactive: underlineColor?.inactive || colors.disabled,
+        focused: underlineColor?.focused,
+      };
     }
 
     const containerStyle = {
@@ -372,7 +377,10 @@ type UnderlineProps = {
     error: string;
   };
   activeColor: string;
-  underlineColorCustom?: string;
+  underlineColorCustom: {
+    inactive: string;
+    focused?: string;
+  };
 };
 
 const Underline = ({
@@ -383,8 +391,8 @@ const Underline = ({
   underlineColorCustom,
 }: UnderlineProps) => {
   let backgroundColor = parentState.focused
-    ? activeColor
-    : underlineColorCustom;
+    ? underlineColorCustom.focused || activeColor
+    : underlineColorCustom.inactive;
   if (error) backgroundColor = colors.error;
   return (
     <Animated.View
