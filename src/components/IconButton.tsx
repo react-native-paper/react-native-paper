@@ -117,8 +117,6 @@ const IconButton = ({
         style,
       ]}
       accessibilityLabel={accessibilityLabel}
-      accessibilityTraits={disabled ? ['button', 'disabled'] : 'button'}
-      accessibilityComponentType="button"
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       disabled={disabled}

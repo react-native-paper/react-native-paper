@@ -51,7 +51,6 @@ type Props = React.ComponentPropsWithRef<typeof Title> & {
  */
 const DialogTitle = ({ children, theme, style, ...rest }: Props) => (
   <Title
-    accessibilityTraits="header"
     accessibilityRole="header"
     style={[styles.text, { color: theme.colors.text }, style]}
     {...rest}

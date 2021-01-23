@@ -127,7 +127,6 @@ exports[`Appbar does not pass any additional props to Searchbar 1`] = `
     </View>
     <TextInput
       accessibilityRole="search"
-      accessibilityTraits="search"
       allowFontScaling={true}
       keyboardAppearance="light"
       placeholder="Search"
@@ -421,7 +420,6 @@ exports[`Appbar passes additional props to AppbarBackAction, AppbarContent and A
   >
     <Text
       accessibilityRole="header"
-      accessibilityTraits="header"
       accessible={true}
       numberOfLines={1}
       style={
