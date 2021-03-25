@@ -13,7 +13,7 @@ import TextInputIcon from './Adornment/TextInputIcon';
 import TextInputAffix from './Adornment/TextInputAffix';
 import { withTheme } from '../../core/theming';
 import type { RenderProps, State } from './types';
-import type { $Omit } from '../../types';
+import type { $Omit, UnderlineColor } from '../../types';
 
 const BLUR_ANIMATION_DURATION = 180;
 const FOCUS_ANIMATION_DURATION = 150;
@@ -59,7 +59,7 @@ export type TextInputProps = React.ComponentPropsWithRef<
   /**
    * Underline color of the input.
    */
-  underlineColor?: string;
+  underlineColor?: UnderlineColor;
   /**
    * Sets min height with densed layout. For `TextInput` in `flat` mode
    * height is `64dp` or in dense layout - `52dp` with label or `40dp` without label.
