@@ -52,11 +52,6 @@ type Props = {
   theme: ReactNativePaper.Theme;
 };
 
-type State = {
-  opacity: Animated.Value;
-  rendered: boolean;
-};
-
 const DEFAULT_DURATION = 220;
 const TOP_INSET = getStatusBarHeight(true);
 const BOTTOM_INSET = getBottomSpace();
@@ -100,51 +95,36 @@ const BOTTOM_INSET = getBottomSpace();
  * export default MyComponent;
  * ```
  */
-class Modal extends React.Component<Props, State> {
-  static defaultProps = {
-    dismissable: true,
-    visible: false,
-    overlayAccessibilityLabel: 'Close modal',
-  };
+const Modal = ({
+  children,
+  dismissable = true,
+  theme,
+  contentContainerStyle,
+  overlayAccessibilityLabel = 'Close modal',
+  visible = false,
+  onDismiss,
+  style,
+}: Props) => {
+  const { current: opacity } = React.useRef<Animated.Value>(
+    new Animated.Value(visible ? 1 : 0)
+  );
+  const [rendered, setRendered] = React.useState<boolean>(visible);
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State) {
-    if (nextProps.visible && !prevState.rendered) {
-      return {
-        rendered: true,
-      };
-    }
+  const {
+    animation: { scale },
+    colors,
+  } = theme;
 
-    return null;
-  }
-
-  state = {
-    opacity: new Animated.Value(this.props.visible ? 1 : 0),
-    rendered: this.props.visible,
-  };
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.visible !== this.props.visible) {
-      if (this.props.visible) {
-        this.showModal();
-      } else {
-        this.hideModal();
-      }
-    }
-  }
-
-  private handleBack = () => {
-    if (this.props.dismissable) {
-      this.hideModal();
+  const handleBack = React.useCallback(() => {
+    if (dismissable) {
+      hideModal();
     }
     return true;
-  };
+  }, [dismissable]);
 
-  private showModal = () => {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBack);
-    BackHandler.addEventListener('hardwareBackPress', this.handleBack);
-
-    const { opacity } = this.state;
-    const { scale } = this.props.theme.animation;
+  const showModal = React.useCallback(() => {
+    BackHandler.removeEventListener('hardwareBackPress', handleBack);
+    BackHandler.addEventListener('hardwareBackPress', handleBack);
 
     Animated.timing(opacity, {
       toValue: 1,
@@ -152,13 +132,10 @@ class Modal extends React.Component<Props, State> {
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
-  };
+  }, [handleBack, opacity, scale]);
 
-  private hideModal = () => {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBack);
-
-    const { opacity } = this.state;
-    const { scale } = this.props.theme.animation;
+  const hideModal = React.useCallback(() => {
+    BackHandler.removeEventListener('hardwareBackPress', handleBack);
 
     Animated.timing(opacity, {
       toValue: 0,
@@ -170,81 +147,79 @@ class Modal extends React.Component<Props, State> {
         return;
       }
 
-      if (this.props.visible && this.props.onDismiss) {
-        this.props.onDismiss();
+      if (visible && onDismiss) {
+        onDismiss();
       }
 
-      if (this.props.visible) {
-        this.showModal();
+      if (visible) {
+        showModal();
       } else {
-        this.setState({
-          rendered: false,
-        });
+        setRendered(false);
       }
     });
-  };
+  }, [opacity, scale, visible, onDismiss, showModal, handleBack]);
 
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBack);
+  React.useEffect(() => {
+    return () =>
+      BackHandler.removeEventListener('hardwareBackPress', handleBack);
+  }, [handleBack]);
+
+  React.useEffect(() => {
+    if (visible) {
+      showModal();
+    } else {
+      hideModal();
+    }
+  }, [visible, showModal, hideModal]);
+
+  if (visible && !rendered) {
+    setRendered(true);
   }
 
-  render() {
-    const { rendered, opacity } = this.state;
+  if (!rendered) return null;
 
-    if (!rendered) return null;
-
-    const {
-      children,
-      dismissable,
-      style,
-      theme,
-      contentContainerStyle,
-      overlayAccessibilityLabel,
-    } = this.props;
-    const { colors } = theme;
-    return (
-      <Animated.View
-        pointerEvents={this.props.visible ? 'auto' : 'none'}
-        accessibilityViewIsModal
-        accessibilityLiveRegion="polite"
-        style={StyleSheet.absoluteFill}
-        onAccessibilityEscape={this.hideModal}
+  return (
+    <Animated.View
+      pointerEvents={visible ? 'auto' : 'none'}
+      accessibilityViewIsModal
+      accessibilityLiveRegion="polite"
+      style={StyleSheet.absoluteFill}
+      onAccessibilityEscape={hideModal}
+    >
+      <TouchableWithoutFeedback
+        accessibilityLabel={overlayAccessibilityLabel}
+        accessibilityRole="button"
+        disabled={!dismissable}
+        onPress={dismissable ? hideModal : undefined}
       >
-        <TouchableWithoutFeedback
-          accessibilityLabel={overlayAccessibilityLabel}
-          accessibilityRole="button"
-          disabled={!dismissable}
-          onPress={dismissable ? this.hideModal : undefined}
-        >
-          <Animated.View
-            style={[
-              styles.backdrop,
-              { backgroundColor: colors.backdrop, opacity },
-            ]}
-          />
-        </TouchableWithoutFeedback>
-        <View
+        <Animated.View
           style={[
-            styles.wrapper,
-            { marginTop: TOP_INSET, marginBottom: BOTTOM_INSET },
-            style,
+            styles.backdrop,
+            { backgroundColor: colors.backdrop, opacity },
           ]}
-          pointerEvents="box-none"
+        />
+      </TouchableWithoutFeedback>
+      <View
+        style={[
+          styles.wrapper,
+          { marginTop: TOP_INSET, marginBottom: BOTTOM_INSET },
+          style,
+        ]}
+        pointerEvents="box-none"
+      >
+        <Surface
+          style={
+            [{ opacity }, styles.content, contentContainerStyle] as StyleProp<
+              ViewStyle
+            >
+          }
         >
-          <Surface
-            style={
-              [{ opacity }, styles.content, contentContainerStyle] as StyleProp<
-                ViewStyle
-              >
-            }
-          >
-            {children}
-          </Surface>
-        </View>
-      </Animated.View>
-    );
-  }
-}
+          {children}
+        </Surface>
+      </View>
+    </Animated.View>
+  );
+};
 
 export default withTheme(Modal);
 
