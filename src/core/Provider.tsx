@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { AccessibilityInfo, Appearance, ColorSchemeName } from 'react-native';
+import {
+  AccessibilityInfo,
+  Appearance,
+  ColorSchemeName,
+  EventSubscription,
+} from 'react-native';
 import { ThemeProvider } from './theming';
 import { Provider as SettingsProvider, Settings } from './settings';
 import MaterialCommunityIcon from '../components/MaterialCommunityIcon';
@@ -49,10 +54,20 @@ const Provider = ({ ...props }: Props) => {
   }, [props.theme]);
 
   React.useEffect(() => {
-    if (!props.theme) Appearance?.addChangeListener(handleAppearanceChange);
+    let appearanceSubscription: EventSubscription | undefined;
+    if (!props.theme) {
+      appearanceSubscription = Appearance?.addChangeListener(
+        handleAppearanceChange
+      ) as EventSubscription | undefined;
+    }
     return () => {
-      if (!props.theme)
-        Appearance?.removeChangeListener(handleAppearanceChange);
+      if (!props.theme) {
+        if (appearanceSubscription) {
+          appearanceSubscription.remove();
+        } else {
+          Appearance?.removeChangeListener(handleAppearanceChange);
+        }
+      }
     };
   }, [props.theme]);
 
