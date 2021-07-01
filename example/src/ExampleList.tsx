@@ -37,6 +37,7 @@ import ToggleButtonExample from './Examples/ToggleButtonExample';
 import TouchableRippleExample from './Examples/TouchableRippleExample';
 import ThemeExample from './Examples/ThemeExample';
 import RadioButtonItemExample from './Examples/RadioButtonItemExample';
+import DropdownExample from './Examples/DropdownExample';
 
 export const examples: Record<
   string,
@@ -56,6 +57,7 @@ export const examples: Record<
   dataTable: DataTableExample,
   dialog: DialogExample,
   divider: DividerExample,
+  dropdown: DropdownExample,
   fab: FABExample,
   iconButton: IconButtonExample,
   listAccordion: ListAccordionExample,
