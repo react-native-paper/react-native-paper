@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     width: iconWidth,
+    alignItems: 'center',
   },
   title: {
     fontSize: 16,
