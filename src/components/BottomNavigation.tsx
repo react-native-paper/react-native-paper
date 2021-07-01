@@ -225,6 +225,14 @@ type Props = {
    * ```
    */
   barStyle?: StyleProp<ViewStyle>;
+  /**
+   * Style for the label Container.
+   */
+  labelContainerStyle?: StyleProp<ViewStyle>;
+  /**
+   * Style for the icon Container.
+   */
+  iconContainerStyle?: StyleProp<ViewStyle>;
   style?: StyleProp<ViewStyle>;
   /**
    * @optional
@@ -335,6 +343,8 @@ const BottomNavigation = ({
   inactiveColor,
   keyboardHidesNavigationBar = true,
   barStyle,
+  labelContainerStyle,
+  iconContainerStyle,
   labeled = true,
   style,
   theme,
@@ -787,6 +797,7 @@ const BottomNavigation = ({
                     <Animated.View
                       style={[
                         styles.iconContainer,
+                        iconContainerStyle,
                         { transform: [{ translateY }] },
                       ]}
                     >
@@ -851,6 +862,7 @@ const BottomNavigation = ({
                       <Animated.View
                         style={[
                           styles.labelContainer,
+                          labelContainerStyle,
                           { transform: [{ scale }] },
                         ]}
                       >
@@ -902,7 +914,9 @@ const BottomNavigation = ({
                         )}
                       </Animated.View>
                     ) : (
-                      <View style={styles.labelContainer} />
+                      <View
+                        style={[styles.labelContainer, labelContainerStyle]}
+                      />
                     )}
                   </View>
                 ),
